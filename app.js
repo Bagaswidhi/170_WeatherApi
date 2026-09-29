@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/api/lokasi", async (req, res) => {
     const kota = "jakarta";
 
-    const apiKey = "-";
+    const apiKey = "ZPMTmBZwlP4zogSQpxTn";
 
     const url = `https://api.maptiler.com/geocoding/${kota}.json?key=${apiKey}`;
 
