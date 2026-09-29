@@ -3,46 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geolocation</title>
+    <title>Geolocation - Weather API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: gray;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 450px;
+        }
+        .header-info h3 {
+            margin: 5px 0;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .input-group {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            outline: none;
+        }
+        button {
+            background: gray;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        hr {
+            border-color: rgba(255,255,255,0.2);
+            margin: 25px 0;
+        }
+        .result-box p {
+            margin: 10px 0;
+            font-size: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
-
 <body>
 
-    <h3>Nama : </h3>
-    <h3>NIM : </h3>
+    <div class="glass-card">
+        <div class="header-info">
+            <h3>Nama : Bagas Satya Widhi</h3> 
+            <h3>NIM : 20240140170</h3>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="inputKota" placeholder="Lokasi">
+            <button onclick="cariLokasi()">Cari</button>
+        </div>
 
-    <p>
-        Kota :
-        <span id="lokasi"></span>
-    </p>
+        <hr>
 
-    <hr>
-
-    <p>
-        Koordinat :
-        <span id="negara"></span>
-    </p>
+        <div class="result-box" id="resultContainer" style="display: none;">
+            <p>Negara: <span id="negara" class="highlight">-</span></p>
+            <p>Provinsi: <span id="provinsi" class="highlight">-</span></p>
+            <p>Kecamatan: <span id="kecamatan" class="highlight">-</span></p>
+            <p>Longitude: <span id="longitude" class="highlight">-</span></p>
+            <p>Latitude: <span id="latitude" class="highlight">-</span></p>
+        </div>
+    </div>
 
     <script>
+        function cariLokasi() {
+            const kota = document.getElementById("inputKota").value;
+            
+            if (!kota) {
+                alert("Silakan masukkan lokasi terlebih dahulu.");
+                return;
+            }
 
-        fetch("/api/lokasi")
-            .then(response => response.json())
-            .then(data => {
+            fetch(`/api/lokasi?kota=${encodeURIComponent(kota)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        return;
+                    }
 
-                console.log(data);
+                    // Tampilkan kotak hasil
+                    document.getElementById("resultContainer").style.display = "block";
 
-                document.getElementById("lokasi").innerHTML = data.kota;
-
-                document.getElementById("negara").innerHTML =
-                    data.koordinat;
-
-            })
-            .catch(error => {
-
-                console.error(error);
-
-            });
-
+                    // Masukkan data ke masing-masing elemen
+                    document.getElementById("negara").innerHTML = data.negara;
+                    document.getElementById("provinsi").innerHTML = data.provinsi;
+                    document.getElementById("kecamatan").innerHTML = data.kecamatan;
+                    document.getElementById("longitude").innerHTML = data.longitude;
+                    document.getElementById("latitude").innerHTML = data.latitude;
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Terjadi kesalahan saat mengambil data dari server.");
+                });
+        }
     </script>
 
 </body>
